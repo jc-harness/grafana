@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_grafana_1726572399607-push-trigger-input-set
+  identifier: Build_grafana_1726572399607pushtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: jcproject
+  pipeline:
+    identifier: Build_grafana_1726572399607
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: <+trigger.branch>
