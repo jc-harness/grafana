@@ -1,0 +1,100 @@
+pipeline:
+  identifier: Build_grafana_1726572399607
+  name: Build grafana
+  orgIdentifier: default
+  projectIdentifier: jcproject
+  properties:
+    ci:
+      codebase:
+        build: <+input>
+        connectorRef: account.jcgithubconnector
+        repoName: grafana
+  stages:
+    - stage:
+        identifier: build1
+        name: build
+        spec:
+          caching:
+            enabled: true
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  identifier: gobuild
+                  name: go_build
+                  spec:
+                    command: go build
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: gotestcoverage
+                  name: go_test_coverage
+                  spec:
+                    command: go test -coverprofile=coverage.out ./...
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: gotestreport
+                  name: go_test_report
+                  spec:
+                    command: "export GOBIN=/home/harness/go/bin\n\t\texport PATH=/home/harness/go/bin:$PATH\n\t\techo $PATH\n\t\tgo install github.com/jstemmer/go-junit-report/v2@latest\n\t\tgo test -v 2>&1 ./... | go-junit-report -set-exit-code > report.xml"
+                    reports:
+                      spec:
+                        paths:
+                          - /harness/report.xml
+                      type: JUnit
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: installdependencies
+                  name: install dependencies
+                  spec:
+                    command: npm install
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: test
+                  name: test
+                  spec:
+                    command: npm run test
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: lint
+                  name: lint
+                  spec:
+                    command: npm run lint
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: e2e
+                  name: e2e
+                  spec:
+                    command: npm run e2e
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: build
+                  name: build
+                  spec:
+                    command: npm run build
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: dockerbuild
+                  name: docker_build
+                  spec:
+                    caching: true
+                    connectorRef: <+input>
+                    repo: hello/world
+                    tags:
+                      - latest
+                  timeout: ""
+                  type: BuildAndPushDockerRegistry
+          platform:
+            arch: Amd64
+            os: Linux
+          runtime:
+            spec: {}
+            type: Cloud
+        type: CI
