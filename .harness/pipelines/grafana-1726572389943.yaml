@@ -37,5 +37,5 @@ pipeline:
                       - <+codebase.shortCommitSha>
                     caching: true
           caching:
-            enabled: true
+            enabled: false
             paths: []
