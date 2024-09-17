@@ -36,6 +36,3 @@ pipeline:
                       - latest
                       - <+codebase.shortCommitSha>
                     caching: true
-          caching:
-            enabled: false
-            paths: []
